@@ -1,0 +1,99 @@
+---
+title: "BalalaWk4Project"
+author: "Brenda Balala"
+date: "January 6, 2019"
+output: html_document
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## R Markdown
+
+Course Project on Developing Data Products
+for Coursera Developing Data Products Course Project
+
+#Objectives
+This project have two parts:
+
+Created a Shiny Application
+to demonstrate Iris flower data set
+https://en.wikipedia.org/wiki/Iris_flower_data_set
+
+Created an R presentation with an implementation of Shiny and RMarkdown, can be pitched the idea with key features of the project, source code and other links
+http://rpubs.com/zdn
+
+ui.R and server.R codes can be found in:
+https://github.com/softbrendz/BalalaWk4Project
+
+
+#Reference
+https://en.wikipedia.org/wiki/Iris_flower_data_set#Data_set
+
+
+
+#ui.r
+library(shiny)
+
+# Define UI for dataset viewer application
+shinyUI(pageWithSidebar(
+  
+# Application title
+  headerPanel("Iris Database App"),
+ 
+  
+# Sidebar with controls to provide a caption, select a species of iris dataset, and 
+# specify the number of observations to view.
+  sidebarPanel(
+  
+    numericInput("obs", "Number of observations to view:", 10),
+    selectInput("species", "Species:",
+                list("Setosa" = "setosa", 
+                     "Versicolor" = "versicolor", 
+                     "Virginica" = "virginica"))
+  ),
+  
+  
+  
+# Show the caption, a summary of the dataset and an HTML table with
+# the requested number of observations
+  mainPanel(
+    
+    verbatimTextOutput("summary"), 
+    h3(textOutput("species")),
+    
+    tableOutput("view"),
+    plotOutput("irisPlot")
+  )
+))
+
+#server.R
+library(shiny)
+library(datasets)
+
+# Define server logic required to graph selected species of Iris
+shinyServer(function(input, output) {
+  
+
+
+  # Generate a plot for iris dataset based on selected species
+  
+  output$mpgPlot <- renderPlot({
+    output$caption <- renderPrint({
+      output$species <-  selectInput()
+    })
+    irisSub <- subset(iris, Species == input$species)
+    par(mfrow=c(1,2))
+    boxplot(irisSub, main= paste("Boxplot of ",input$species),ylim = c(0,8),las=2)
+    hist(irisSub$Petal.Length,xlim=c(0,8),ylim=c(0,20))
+   
+ 
+    
+    output$view <- renderTable({
+    head(irisSub, n = input$obs)
+      
+    })
+   })
+})
